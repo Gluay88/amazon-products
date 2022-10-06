@@ -6,6 +6,9 @@
   height: 40vmin;
   pointer-events: none;
 }
+.App h1 {
+  color: rgb(4, 52, 78);
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
