@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Product from "./Product";
+import { Index } from "./pages/Index";
+import { About } from "./pages/About";
 import "./App.css";
+import { UserContext } from "./UserContext";
 
 function App() {
   // useEffect stuff..
@@ -28,7 +32,7 @@ function App() {
     setWindowWidth(window.innerWidth);
   };
 
-  // addEventListener(type, listener, options)
+  // addEventListener(type, listener, op`tions)
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     //clean up whatever we did last time..
@@ -37,48 +41,82 @@ function App() {
     };
   }, []);
 
+  // state for useContext
+  const [user, setUser] = useState(null);
+  // update when only value and setValue change only
+  const value = useMemo(() => ({ user, setUser }), [user, setUser]);
+
   return (
-    <div className="App">
-      <h1>Amazon Products</h1>
-      <Product
-        name="Google Home"
-        description="Your AI assistant"
-        price={59.99}
-      />
-      <Product
-        name="iPhone 12 Pro max"
-        description="The best iPhone"
-        price={1200}
-      />
-      <Product
-        name="Macbook Pro"
-        description="Your favorite Computer"
-        price={2500}
-      />
-      <br />
-      <div>
-        <h2>Counter app - useState</h2>
-        <p>The count is: {count}</p>
-        <button onClick={decrement}>-</button>
-        <button onClick={increment}>+</button>
+    <>
+      <Router>
+        <div>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
+            </ul>
+          </nav>
+          {/* pass obj = state from up there */}
+          {/* <UserContext.Provider value={{ value, setValue }}> */}
+          <UserContext.Provider value={value}>
+            <Routes>
+              <Route path="/" exact element={<Index />} />
+              <Route path="/about" element={<About />} />
+            </Routes>
+          </UserContext.Provider>
+        </div>
+      </Router>
+      {/* end Router */}
+      <div className="App">
+        <h1>Amazon Products</h1>
+        <Product
+          name="Google Home"
+          description="Your AI assistant"
+          price={59.99}
+        />
+        <Product
+          name="iPhone 12 Pro max"
+          description="The best iPhone"
+          price={1200}
+        />
+        <Product
+          name="Macbook Pro"
+          description="Your favorite Computer"
+          price={2500}
+        />
+        <br />
+        <div>
+          <h2>Counter app - useState</h2>
+          <p>The count is: {count}</p>
+          <button onClick={decrement}>-</button>
+          <button onClick={increment}>+</button>
+        </div>
+        <br />
+        <div>
+          <h2>useEffect()</h2>
+          <button onClick={() => setResourceType("posts")}>Posts</button>
+          <button onClick={() => setResourceType("users")}>Users</button>
+          <button onClick={() => setResourceType("comments")}>Comments</button>
+          <div>ResourceType: {resourceType}</div>
+          {items.map((item) => {
+            return (
+              <div key={item.id}>
+                <pre>{JSON.stringify(item)}</pre>
+              </div>
+            );
+          })}
+        </div>
+        <br />
+        <div>
+          <h2>WindowInnerWidth - addEventListener</h2>
+          {windowWidth}
+        </div>
       </div>
-      <br />
-      <div>
-        <h2>useEffect()</h2>
-        <button onClick={() => setResourceType("posts")}>Posts</button>
-        <button onClick={() => setResourceType("users")}>Users</button>
-        <button onClick={() => setResourceType("comments")}>Comments</button>
-        <div>ResourceType: {resourceType}</div>
-        {items.map((item) => {
-          return <pre key={item.index}>{JSON.stringify(item)}</pre>;
-        })}
-      </div>
-      <br />
-      <div>
-        <h2>WindowInnerWidth - addEventListener</h2>
-        {windowWidth}
-      </div>
-    </div>
+    </>
   );
 }
 
